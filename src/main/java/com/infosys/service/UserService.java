@@ -1,149 +1,128 @@
 package com.infosys.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.infosys.model.Item;
+
 import com.infosys.model.User;
 import com.infosys.repository.UserRepository;
-import com.infosys.util.AuthenticationResponse;
 
 @Service
-public class UserService  {
-	
-	
+public class UserService {
 
 	@Autowired
-    private UserRepository userRepository;
-	
-	
-	 
-	 @Autowired
-	 private EmailService emailService;
+	private UserRepository userRepository;
 
-//    @Autowired
-//    private PasswordEncoder passwordEncoder;
+	@Autowired
+	private EmailService emailService;
 
-    public String registerUser(User user) {
-        // Check if user already exists
-        if (userRepository.findByEmail(user.getEmail())!=null) {
-            return "Email already exists.";
-        }
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
-        // Generate confirmation code (6-digit OTP)
-        String confirmationCode = emailService.generateRandomOTP();
-        user.setConfirmationCode(confirmationCode);
-        user.setConfirmed(false);
-        
-        
+	public String registerUser(User user) {
+		// Check if user already exists
+		Optional<User> existingUserOptional = userRepository.findByEmail(user.getEmail());
+		if (existingUserOptional.isPresent()) {
+			return "Email already exists.";
+		}
 
-        userRepository.save(user);
+		// Generate confirmation code (6-digit OTP)
+		String confirmationCode = emailService.generateRandomOTP();
+		user.setConfirmationCode(confirmationCode);
+		user.setConfirmed(false); // User is not yet confirmed
 
-        // Send confirmation email
-         //emailService.sendConfirmationEmail(user.getEmail(), confirmationCode);
+		if (user.getRole().equalsIgnoreCase("admin")) {
+			user.setRole("ADMIN,USER");
+		}
+		// Encode user password before saving
+		String encodedPassword = passwordEncoder.encode(user.getPassword());
+		user.setPassword(encodedPassword);
 
-        return "User registered successfully. Please check your email to confirm registration.";
-    }
+		// Save user to the repository
+		userRepository.save(user);
 
-    public String confirmRegistration(String email, String confirmationCode) {
-    	 User user = userRepository.findByEmail(email);
-         if (user == null) {
-             return "Invalid email address";
-         }
-         if(user.isConfirmed()) {
-         	 return "User email is already verified";
-         }
-         if (!confirmationCode.equals(user.getConfirmationCode())) {
-             return "Invalid OTP";
-         }
+		// Optionally, return a success message or user ID upon successful registration
+		return "User registered successfully. Confirmation code sent to " + user.getEmail();
 
-         // Mark user as confirmed
-         user.setConfirmed(true);
-         userRepository.save(user);
+	}
 
-         return "User registration confirmed successfully.";
-    }
+	public String confirmRegistration(String email, String confirmationCode) {
+		Optional<User> optionalUser = userRepository.findByEmail(email);
+		if (optionalUser.isPresent()) {
+			User user = optionalUser.get();
 
-//    @Override
-//    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-//        User user = userRepository.findByEmail(email);
-//        
-//                //.orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
-//
-//        return org.springframework.security.core.userdetails.User.builder()
-//                .username(user.getEmail())
-//                .password(user.getPassword())
-//                .roles(user.getRole()) // Add roles/permissions as needed
-//                .build();
-//    }
+			if (user.isConfirmed()) {
+				return "User email is already verified";
+			}
+			if (!confirmationCode.equals(user.getConfirmationCode())) {
+				return "Invalid OTP";
+			}
 
-    public User updateUser(Long userId, User updatedUser) {
-        User existingUser = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+			// Mark user as confirmed
+			user.setConfirmed(true);
+			userRepository.save(user);
 
-        if (existingUser.getEmail()!=updatedUser.getEmail()) {
-        	
-        	if (userRepository.findByEmail(updatedUser.getEmail())!=null) {
-                throw new RuntimeException( "Email already exists");
-            }
+			return "User registration confirmed successfully.";
+		}
+		return "Invalid email address";
+	}
 
-            // Generate confirmation code (6-digit OTP)
-            String confirmationCode = emailService.generateRandomOTP();
-            updatedUser.setConfirmationCode(confirmationCode);
-            updatedUser.setConfirmed(false);
-        }
+	public User updateUser(Long userId, User updatedUser) {
+		User existingUser = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Update the existing user with the new data
-        existingUser.setEmail(updatedUser.getEmail());
-        existingUser.setName(updatedUser.getName());
-        existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
-        existingUser.setRole(updatedUser.getRole());
-        existingUser.setPassword(updatedUser.getPassword());
-        existingUser.setCoins(updatedUser.getCoins());
-       
+		if (!existingUser.getEmail().equalsIgnoreCase(updatedUser.getEmail())) {
 
-        // Save the updated user
-        return userRepository.save(existingUser);
-    }
+			if ((userRepository.findByEmail(updatedUser.getEmail()).isPresent())) {
+				throw new RuntimeException("Email already exists");
+			}
+			existingUser.setEmail(updatedUser.getEmail());
+			String confirmationCode = emailService.generateRandomOTP();
+			updatedUser.setConfirmationCode(confirmationCode);
+			updatedUser.setConfirmed(false);
+		}
+		if (!passwordEncoder.matches(updatedUser.getPassword(), existingUser.getPassword())) {
+			existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+		}
 
-    
- 
+		existingUser.setName(updatedUser.getName());
+		existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
+		existingUser.setCoins(updatedUser.getCoins());
+
+		return userRepository.save(existingUser);
+	}
 
 	public List<User> getAllUsers() {
 		// TODO Auto-generated method stub
 		List<User> users = userRepository.findAll();
-        // Fetch walletItems eagerly to avoid lazy-loading issues
-        users.forEach(user -> user.getWalletItems().size());
-        return users;
+		// Fetch walletItems eagerly to avoid lazy-loading issues
+		users.forEach(user -> user.getWalletItems().size());
+		return users;
 	}
 
-	
 	public User getUserById(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
-    }
-	 
-	 
+		return userRepository.findById(userId)
+				.orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
+	}
 
 	public ResponseEntity<String> deleteById(Long id) {
-		
-            userRepository.deleteById(id);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("User deleted successfully.");
-        
-        
-        
+
+		userRepository.deleteById(id);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).body("User deleted successfully.");
 	}
 
 	public ResponseEntity<String> deleteAll() {
 		// TODO Auto-generated method stub
-		 userRepository.deleteAll();
-		 return ResponseEntity.status(HttpStatus.NO_CONTENT).body("All Users deleted");
+		userRepository.deleteAll();
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).body("All Users deleted");
+	}
+
+	public Optional<User> isUserConfirmed(String email) {
+		Optional<User> userOptional = userRepository.findByEmail(email);
+		return userOptional;
 	}
 }

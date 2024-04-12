@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserDTO {
 
-    private Long id;
-    private String name;
-    private String email;
-    private String phoneNumber;
+	private Long id;
+	private String name;
+	private String email;
+	private String phoneNumber;
 
-    // Constructor, getters, and setters...
+	// Constructor, getters, and setters...
 }

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AddItemToWalletRequest {
 
-    private Long userId;
-    private String itemName;
-    private int quantity;
+	private Long userId;
+	private String itemName;
+	private int quantity;
 }
