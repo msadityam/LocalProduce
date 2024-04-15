@@ -74,7 +74,7 @@ public class UserService {
 
 	public User updateUser(Long userId, User updatedUser) {
 		User existingUser = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-
+  if(updatedUser.getEmail()!=null) {
 		if (!existingUser.getEmail().equalsIgnoreCase(updatedUser.getEmail())) {
 
 			if ((userRepository.findByEmail(updatedUser.getEmail()).isPresent())) {
@@ -82,13 +82,15 @@ public class UserService {
 			}
 			existingUser.setEmail(updatedUser.getEmail());
 			String confirmationCode = emailService.generateRandomOTP();
-			updatedUser.setConfirmationCode(confirmationCode);
-			updatedUser.setConfirmed(false);
+			existingUser.setConfirmationCode(confirmationCode);
+			existingUser.setConfirmed(false);
 		}
+  }
+  if(updatedUser.getPassword()!=null) {
 		if (!passwordEncoder.matches(updatedUser.getPassword(), existingUser.getPassword())) {
 			existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
 		}
-
+  }
 		existingUser.setName(updatedUser.getName());
 		existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
 		existingUser.setCoins(updatedUser.getCoins());
@@ -97,11 +99,7 @@ public class UserService {
 	}
 
 	public List<User> getAllUsers() {
-		// TODO Auto-generated method stub
-		List<User> users = userRepository.findAll();
-		// Fetch walletItems eagerly to avoid lazy-loading issues
-		users.forEach(user -> user.getWalletItems().size());
-		return users;
+		return userRepository.findAll();
 	}
 
 	public User getUserById(Long userId) {
@@ -110,7 +108,6 @@ public class UserService {
 	}
 
 	public ResponseEntity<String> deleteById(Long id) {
-
 		userRepository.deleteById(id);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).body("User deleted successfully.");
 	}

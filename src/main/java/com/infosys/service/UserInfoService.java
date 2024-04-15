@@ -27,11 +27,4 @@ public class UserInfoService implements UserDetailsService {
 		return userDetail.map(UserInfoDetails::new)
 				.orElseThrow(() -> new UsernameNotFoundException("User not found " + username));
 	}
-
-//	public String addUser(User userInfo) {
-//		userInfo.setPassword(encoder.encode(userInfo.getPassword()));
-//		repository.save(userInfo);
-//		return "User Added Successfully";
-//	}
-
 }

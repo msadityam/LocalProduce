@@ -54,7 +54,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"aditya@admin.com\",\r\n    \"name\": \"Aditya\",\r\n    \"phoneNumber\": \"123456789\",\r\n    \"password\": \"password123\",\r\n    \"role\": \"ADMIN\"\r\n    \r\n}\r\n\r\n",
+							"raw": "{\r\n    \"email\": \"user@user.com\",\r\n    \"name\": \"user2\",\r\n    \"phoneNumber\": \"123456789\",\r\n    \"password\": \"password123\",\r\n    \"role\": \"USER\"\r\n    \r\n}\r\n\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -120,7 +120,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/api/confirm?email=user2@example.com&otp=692742",
+							"raw": "http://localhost:8080/api/confirm?email=user@user.com&otp=288442",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -133,11 +133,11 @@
 							"query": [
 								{
 									"key": "email",
-									"value": "user2@example.com"
+									"value": "user@user.com"
 								},
 								{
 									"key": "otp",
-									"value": "692742"
+									"value": "288442"
 								}
 							]
 						}
@@ -175,7 +175,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"aditya@admin.com\",\r\n    \"password\": \"password123\" \r\n}\r\n\r\n",
+							"raw": "{\r\n    \"email\": \"aditya2@admin.com\",\r\n    \"password\": \"password123\" \r\n}\r\n\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -289,7 +289,7 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:8080/api/user/2",
+							"raw": "http://localhost:8080/api/user/353",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -298,7 +298,7 @@
 							"path": [
 								"api",
 								"user",
-								"2"
+								"353"
 							],
 							"query": [
 								{
@@ -355,7 +355,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n   \"email\": \"delete1@admin.com\",\r\n    \"name\": \"delete\",\r\n    \"phoneNumber\": \"12345678\",\r\n    \"role\": \"USER\",\r\n    \"confirmationCode\": \"931642\",\r\n    \"confirmed\": true,\r\n    \"password\": \"$2a$10$bojMkvpWn.GjbHGR9DUAbOxz9fU2aLwXBT8lxC/8iR/rD4i5ZkXYW\",\r\n    \"coins\": 600.0,\r\n    \"walletItems\": {}\r\n    \r\n}\r\n\r\n",
+							"raw": "{\r\n   \r\n    \"name\": \"user3\",\r\n    \"phoneNumber\": \"12345678\",\r\n    \"role\": \"USER\",\r\n    \r\n\r\n    \"coins\": 500.0,\r\n    \"walletItems\": {}\r\n    \r\n}\r\n\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -363,7 +363,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/api/user/252",
+							"raw": "http://localhost:8080/api/user/302",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -372,7 +372,7 @@
 							"path": [
 								"api",
 								"user",
-								"252"
+								"302"
 							]
 						}
 					},
@@ -416,7 +416,7 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:8080/api/admin/deleteById?id=152",
+							"raw": "http://localhost:8080/api/admin/deleteById?id=252",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -430,7 +430,7 @@
 							"query": [
 								{
 									"key": "id",
-									"value": "152"
+									"value": "252"
 								}
 							]
 						}
@@ -496,7 +496,7 @@
 			"name": "Inventory",
 			"item": [
 				{
-					"name": "getAllItmes",
+					"name": "getAllItems",
 					"request": {
 						"auth": {
 							"type": "noauth"
@@ -526,7 +526,7 @@
 					"response": []
 				},
 				{
-					"name": "purchase",
+					"name": "purchaseItem",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -537,7 +537,7 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:8080/items/user/purchase?userId=252&itemName=Mango&quantity=2",
+							"raw": "http://localhost:8080/items/user/purchase?userId=353&itemName=Orange&quantity=3",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -551,15 +551,15 @@
 							"query": [
 								{
 									"key": "userId",
-									"value": "252"
+									"value": "353"
 								},
 								{
 									"key": "itemName",
-									"value": "Mango"
+									"value": "Orange"
 								},
 								{
 									"key": "quantity",
-									"value": "2"
+									"value": "3"
 								},
 								{
 									"key": "itemName",
@@ -572,21 +572,17 @@
 					"response": []
 				},
 				{
-					"name": "sellitem",
+					"name": "sellItem",
 					"request": {
-						"auth": {
-							"type": "noauth"
-						},
 						"method": "POST",
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "{{token}}",
-								"type": "text"
+								"value": "{{token}}"
 							}
 						],
 						"url": {
-							"raw": "http://localhost:8080/items/user/sell?userId=252&itemName=Mango&quantity=1",
+							"raw": "http://localhost:8080/items/user/sell?userId=353&itemName=Orange&quantity=1",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -600,11 +596,11 @@
 							"query": [
 								{
 									"key": "userId",
-									"value": "252"
+									"value": "353"
 								},
 								{
 									"key": "itemName",
-									"value": "Mango"
+									"value": "Orange"
 								},
 								{
 									"key": "quantity",
@@ -616,24 +612,22 @@
 					"response": []
 				},
 				{
-					"name": "AddItemToUser",
+					"name": "addItmesToUser",
 					"request": {
 						"method": "POST",
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "{{token}}",
-								"type": "text"
+								"value": "{{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"userId\": 252,\r\n    \"itemName\": \"Mango\",\r\n    \"quantity\": 2\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": "{\r\n    \"userId\": 102,\r\n    \"itemName\": \"Orange\",\r\n    \"quantity\": 10\r\n}"
 						},
 						"url": {
 							"raw": "http://localhost:8080/items/admin/addToUserWallet",
@@ -768,7 +762,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \r\n    \"name\": \"Mango\",\r\n    \"price\": 90.0,\r\n    \"quantity\": 8\r\n}",
+							"raw": "{\r\n    \r\n    \"name\": \"Mango\",\r\n    \"price\": 80.0,\r\n    \"quantity\": 5\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
