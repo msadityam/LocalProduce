@@ -15,8 +15,8 @@ public class MailConfig {
 		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
 		mailSender.setHost("smtp.office365.com"); // Set your SMTP server host
 		mailSender.setPort(587); // Set your SMTP server port
-		mailSender.setUsername("msadityams@outlook.com"); // Set your email address
-		mailSender.setPassword("9Godisgreat@"); // Set your email password
+		mailSender.setUsername("user_name"); // Set your email address
+		mailSender.setPassword("password"); // Set your email password
 
 		Properties props = mailSender.getJavaMailProperties();
 		props.put("mail.transport.protocol", "smtp");
